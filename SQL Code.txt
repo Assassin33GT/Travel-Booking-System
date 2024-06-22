@@ -1,0 +1,256 @@
+                          /* Creation of tables */
+Create table Customer
+(Customer_ID Integer Not Null Check (Customer_ID > 0),
+ Fname Varchar(50) Not Null,
+ Lname Varchar(50) Not Null,
+ Phonenumber Integer Not Null CHECK (REGEXP_LIKE(Phonenumber, '^\d{11}$')),
+ Email Varchar(255),
+ DOB DATE Not Null,
+ Address Varchar(255),
+ Book_ID Integer Check (Book_ID > 0),   
+ PRIMARY KEY (Customer_ID),
+ FOREIGN KEY (Book_ID) REFERENCES Booking (Booking_ID),
+ UNIQUE (Email,Book_ID));
+
+Create table Flight 
+(Flight_ID Integer Not Null Check (Flight_ID > 0),
+ Air_company Varchar(50) Not Null,
+ Prices Double Precision Not Null Check (Prices > 50),
+ Available_seats Integer Not Null Check (Available_seats > 0),
+ PRIMARY KEY (Flight_ID));
+
+Create table Hotel
+(Hotel_ID Integer Not Null Check (Hotel_ID > 0),
+ Available_rooms Integer Not Null Check (Available_rooms > 0),
+ Name Varchar(50) Not Null,
+ Location Varchar(255) Not Null,
+ PRIMARY KEY (Hotel_ID));
+
+Create table Car_rental
+(Rental_ID Integer Not Null Check (Rental_ID > 0),
+ Rental_company Varchar(50) Not Null,
+ Car_type Varchar(30) Not Null,
+ Availability Varchar(30) Not Null,
+ Book_ID Integer Not Null Check (Book_ID > 0),
+ PRIMARY KEY (Rental_ID),
+ FOREIGN KEY (Book_ID) REFERENCES Booking (Booking_ID),
+ UNIQUE(Book_ID));
+
+Create table Booking
+(Booking_ID Integer Not Null Check (Booking_ID > 0), 
+ Booking_date Date Not Null,
+ Total_price Double Precision Not Null Check (Total_price > 0),
+ F_ID Integer Not Null Check (F_ID > 0),
+ H_ID Integer Check (H_ID > 0),
+ PRIMARY KEY (Booking_ID),
+ FOREIGN KEY (F_ID) REFERENCES Flight (Flight_ID),
+ FOREIGN KEY (H_ID) REFERENCES Hotel (Hotel_ID));
+
+Create table Payment
+(Payment_ID Integer Not Null Check (Payment_ID > 0),
+ Methodd Varchar(255) Not Null,
+ Amount Double Precision Not Null Check (Amount > 0),
+ Cust_ID Integer Not Null Check (Cust_ID > 0),
+ PRIMARY KEY (Payment_ID),
+ FOREIGN KEY (Cust_ID) REFERENCES Customer (Customer_ID),
+ UNIQUE (Cust_ID));
+
+Create table Pathh
+(Path_ID Integer Not Null Check (Path_ID > 0),
+ Status Varchar(20) Not Null,
+ Fl_ID Integer Not Null Check (Fl_ID > 0),
+ P_air_code Varchar(50) Not Null,
+ P_Cust_ID Integer Not Null Check (P_Cust_ID > 0),
+ PRIMARY KEY (Path_ID),
+ FOREIGN KEY (Fl_ID) REFERENCES Flight (Flight_ID),
+ FOREIGN KEY (P_air_code) REFERENCES Airport (Airport_code),
+ FOREIGN KEY (P_Cust_ID) REFERENCES Customer (Customer_ID));
+
+Create table Airport
+(Airport_code Varchar(50) Not Null,
+ Name Varchar(50) Not Null,
+ Location Varchar(255) Not Null,
+ PRIMARY KEY (Airport_code));
+
+Create table Land
+(Air_code Varchar(50) Not Null,
+ L_Path_ID Integer Not Null Check (L_Path_ID > 0),
+ Departure_airport Varchar(30) Not Null,
+ Departure_time timestamp Not Null,
+ Arrival_airport Varchar(30) Not Null,
+ Arrival_time timestamp Not Null,
+ FOREIGN KEY (Air_code) REFERENCES Airport (Airport_code),
+ FOREIGN KEY (L_Path_ID) REFERENCES Pathh (Path_ID));
+
+Create table Associate
+(A_Cust_ID Integer Not Null Check (A_Cust_ID > 0),
+ A_Path_ID Integer Not Null Check (A_Path_ID > 0),
+ FOREIGN KEY (A_Cust_ID) REFERENCES Customer (Customer_ID),
+ FOREIGN KEY (A_Path_ID) REFERENCES Pathh (Path_ID));
+
+                         /*Insertion into tables*/
+Insert into Airport values ('A001','Airport 1','Location 1')
+Insert into Airport values ('A002', 'Airport 2', 'Location 2')
+Insert into Airport values ('A003', 'Airport 3', 'Location 3')
+Insert into Airport values ('A004', 'Airport 4', 'Location 4')
+Insert into Airport values ('A005', 'Airport 5', 'Location 5')
+Insert into Airport values ('A006', 'Airport 6', 'Location 6')
+    
+Insert into Flight values (1,'Airline 1',200.00, 55)
+Insert into Flight values (2, 'Airline 2',250.00, 45)
+Insert into Flight values (3, 'Airline 3',240.00, 50)
+Insert into Flight values (4, 'Airline 4',300.00, 30)
+Insert into Flight values (5, 'Airline 5',280.00, 35)
+Insert into Flight values (6, 'Airline 6',300.00, 40)
+    
+Insert into Hotel values (1, 100, 'Hotel A', 'City X')
+Insert into Hotel values (2, 80, 'Hotel B', 'City Y')
+Insert into Hotel values (3, 120, 'Hotel C', 'City Z')
+Insert into Hotel values (4, 90, 'Hotel D', 'City X')
+Insert into Hotel values (5, 110, 'Hotel E', 'City Y')
+
+Insert into Booking values (1, TO_DATE('2023-05-01', 'YYYY-MM-DD'), 350.09, 1, 1)
+Insert into Booking values (2, TO_DATE('2023-05-02', 'YYYY-MM-DD'), 450.13, 2, 2)
+Insert into Booking values (3, TO_DATE('2023-05-03', 'YYYY-MM-DD'), 340.33, 3, 3)
+Insert into Booking values (4, TO_DATE('2023-05-04', 'YYYY-MM-DD'), 480.12, 4, 4)
+Insert into Booking values (5, TO_DATE('2023-05-05', 'YYYY-MM-DD'), 500.16, 5, 5)
+Insert into Booking values (6, TO_DATE('2023-05-05', 'YYYY-MM-DD'), 500.16, 1, 1)
+
+Insert into Car_rental values (1, 'ABC', 'SUV', 'Available', 1)
+Insert into Car_rental values (2, 'XYZ', 'SUV', 'Available', 2)
+Insert into Car_rental values (3, 'ABC', 'Compact', 'Unavailable', 3)
+Insert into Car_rental values (4, 'XYZ', 'Compact', 'Available', 4)
+Insert into Car_rental values (5, 'GHI', 'Luxury', 'Available', 5)
+Insert into Car_rental values (6, 'ABC', 'Compact', 'Unavailable', 6)
+   
+Insert into Customer values (1, 'John', 'Doe', 1234567890, 'john.doe@example.com', TO_DATE('1990-01-01', 'YYYY-MM-DD'), '123 Main St', 1)
+Insert into Customer values (2, 'Jane', 'Smith', 9876543210, 'jane.smith@example.com', TO_DATE('1992-05-15', 'YYYY-MM-DD'), '456 Elm St', 2)
+Insert into Customer values (3, 'Michael', 'Johnson', 5551234567, 'michael.johnson@example.com', TO_DATE('1985-09-20', 'YYYY-MM-DD'), '789 Oak St', 3)
+Insert into Customer (Customer_ID, Fname, Lname, Phonenumber, DOB, Address, Book_ID) values (4, 'Sarah', 'Williams', 7778889999, TO_DATE('1992-09-12', 'YYYY-MM-DD'), '321 Pine St', 4)
+Insert into Customer values (5, 'David', 'Wilson', 4445556666, 'david.wilson@example.com', TO_DATE('1993-07-25', 'YYYY-MM-DD'), '567 Maple St', 5)
+Insert into Customer values (6, 'Abdo', 'Wilson', 4445056666, 'david.wilson@example.com', TO_DATE('1993-07-25', 'YYYY-MM-DD'), '567 Maple St', 5)
+
+Insert into Payment values (1, 'Visa', 350.09, 1)
+Insert into Payment values (2, 'PayPal', 450.13, 2)
+Insert into Payment values (3, 'Visa', 340.33, 3)
+Insert into Payment values (4, 'PayPal', 480.12, 4)
+Insert into Payment values (5, 'Visa', 500.16, 5)
+
+Insert into Pathh values (1, 'Active', 1, 'A001', 1)
+Insert into Pathh values (2, 'Active', 2, 'A002', 2)
+Insert into Pathh values (3, 'Pending', 3, 'A003', 3)
+Insert into Pathh values (4, 'Active', 4, 'A004', 4)
+Insert into Pathh values (5, 'Pending', 5, 'A005', 5)
+
+                                    /*Quereies*/
+
+   /* To get all seats in flight and ordered by flight_ID*/
+SELECT Flight_ID, Available_seats
+FROM Flight
+Order By Flight_ID;
+
+   /* To get name of all customers in this flight*/
+SELECT Fname , Lname
+FROM Customer,Booking
+WHERE F_ID = 1 AND Booking_ID = Book_ID
+
+   /* To get Phone number, Fname and Lname which use visa to pay*/
+SELECT Phonenumber, Fname, Lname
+FROM Customer, Payment
+WHERE Customer_ID = Cust_ID AND Methodd = 'Visa';
+
+   /* To get sum of all flights price*/
+SELECT SUM(Total_price)
+FROM Booking
+INNER JOIN Customer ON Booking.Book_ID = Customer.Booking_ID
+WHERE Customer.Customer_ID IN (
+    SELECT DISTINCT Customer_ID
+    FROM Customer
+    WHERE Fname IN ('John', 'Jane')
+)
+
+   /* To get flights that no one book in it*/
+SELECT Flight_ID
+FROM Flight
+WHERE NOT EXISTS(
+    SELECT Booking_ID
+    FROM Booking
+    WHERE Flight_ID = F_ID AND Booking_ID IS NOT NULL)
+
+    /* To get type of car for customer which id is 3*/
+SELECT Distinct Car_type
+FROM Customer C,Car_rental A,Booking B
+Where C.Customer_ID = 3 AND B.Booking_ID = C.Book_ID AND B.Booking_ID = A.Book_ID
+
+    /*Location of Customer 2 hotel*/
+SELECT Location
+FROM Customer,Hotel,Booking
+WHERE Customer_ID = 2 AND Book_ID = Booking_ID AND H_ID = Hotel_ID
+
+    
+                            /*Functions*/
+
+/* Function 1 get number of empty seats to specific flight*/
+CREATE OR REPLACE FUNCTION noofnonusedseats(Flight_IDD IN INTEGER) RETURN INTEGER IS
+  AvailableSeatss INTEGER;
+  Used INTEGER;
+BEGIN
+  SELECT Available_seats INTO AvailableSeatss
+  FROM Flight
+  WHERE Flight_ID = Flight_IDD;
+
+SELECT Count(*) INTO Used
+    FROM Customer,Flight,Booking
+    WHERE Flight_ID = Flight_IDD AND Flight_ID = F_ID AND Booking_ID = Book_ID;
+AvailableSeatss := AvailableSeatss - Used;
+  RETURN AvailableSeatss;
+END;/
+
+SET SERVEROUTPUT ON;
+
+DECLARE
+  Seats INTEGER;
+BEGIN
+  Seats := noofnonusedseats(3);
+  dbms_output.put_line('Number of non-used seats: ' || Seats);
+END;/
+/* END 1*/
+
+/*Function 2 if the customer has discount use this function to get amount after discount*/
+CREATE OR REPLACE FUNCTION Hasdiscount(BBooking_ID IN INTEGER,Discount IN INTEGER) RETURN INTEGER IS
+    Afterdis DOUBLE PRECISION;
+    TTotal_price INTEGER;
+BEGIN
+    SELECT Total_price INTO TTotal_price
+    FROM Booking
+    WHERE Booking_ID = BBooking_ID;
+Afterdis := ((Discount/100) * TTotal_price);
+Afterdis := TTotal_price - Afterdis;
+RETURN Afterdis;
+END; /
+        
+DECLARE
+    Amount DOUBLE PRECISION;
+BEGIN
+    Amount := Hasdiscount(2,20);
+    dbms_output.put_line('The amount is: ' || Amount);
+END; /
+/*END2 */
+
+                                     /*Trigger*/
+CREATE OR REPLACE TRIGGER CheckAvailability
+BEFORE
+INSERT OR UPDATE ON Car_rental
+FOR EACH ROW
+BEGIN
+IF:new.Availability = 'Unavailable' THEN
+    raise_application_error(-20001, 'This car is Unavailable');
+END IF;
+END;
+                               /*Others*/
+drop table Customer
+desc Airport
+Select * from Airport
+Select * from Flight
+Select * from Hotel 
+delete from Airport
